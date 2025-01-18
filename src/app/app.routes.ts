@@ -14,7 +14,7 @@ export const routes: Routes = [
     children: [
       {
         path: 'projects',
-        title: `Projects - ${APP_NAME}`,
+        title: `Projets - ${APP_NAME}`,
         loadComponent: () => import('./pages/home/projects/projects.component'),
       },
       {
