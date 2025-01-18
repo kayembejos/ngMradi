@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
+import { ToolbarComponent } from './toolbar/toolbar.component';
 
 @Component({
   selector: 'app-home',
-  imports: [],
-  template: ` <p>home works!</p> `,
+  imports: [ToolbarComponent],
+  template: ` <app-toolbar /> `,
   styles: ``,
 })
 export default class HomeComponent {}
