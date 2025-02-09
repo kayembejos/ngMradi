@@ -30,7 +30,7 @@ export const routes: Routes = [
               import('./pages/home/contributors/active/active.component'),
           },
           {
-            path: 'archived',
+            path: 'achived',
             title: `Contributeurs archivés - ${APP_NAME}`,
             loadComponent: () =>
               import('./pages/home/contributors/archived/archived.component'),

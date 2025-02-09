@@ -11,6 +11,8 @@ import {
   ThemeMode,
   ThemeService,
 } from '../../../core/services/utilities/theme.service';
+import { StateService } from '../../../core/services/utilities/state.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-toolbar',
@@ -26,7 +28,7 @@ import {
     <mat-toolbar>
       <div class="left-container">
         @if (viewport() <= medium) {
-        <button mat-icon-button matTooltip="Menu">
+        <button mat-icon-button matTooltip="Menu" (click)="toggleDrawer()">
           <mat-icon>menu</mat-icon>
         </button>
         }
@@ -56,7 +58,7 @@ import {
         </button>
         <mat-divider></mat-divider>
 
-        <button mat-menu-item>
+        <button mat-menu-item (click)="logOut()">
           <mat-icon>logout</mat-icon>
           <span>Déconnexion</span>
         </button>
@@ -74,7 +76,7 @@ import {
         </button>
       </mat-menu>
     </mat-toolbar>
-    <mat-divider />
+    <mat-divider></mat-divider>
   `,
   styles: `
    mat-toolbar {
@@ -105,6 +107,14 @@ export class ToolbarComponent {
   medium = IS_MEDIUM;
   viewport = inject(WindowsObserverService).width;
   private ts = inject(ThemeService);
+  state = inject(StateService);
+  route = inject(Router);
+
+  toggleDrawer = () => this.state.isToggleDrawer.update((value) => !value);
 
   switchTheme = (theme: ThemeMode) => this.ts.setTheme(theme);
+
+  logOut() {
+    this.route.navigate(['login']);
+  }
 }

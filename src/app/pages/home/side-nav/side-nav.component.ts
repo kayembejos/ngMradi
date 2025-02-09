@@ -1,8 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { IS_MEDIUM } from '../../../app.constants';
+import { WindowsObserverService } from '../../../core/services/utilities/windows-observer.service';
+import { StateService } from '../../../core/services/utilities/state.service';
 
 @Component({
   selector: 'app-side-nav',
@@ -16,12 +19,21 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
   ],
   template: `
     <mat-drawer-container>
-      <mat-drawer mode="side" opened>
-        <a routerLink="/projects" mat-menu-item routerLinkActive="active-link">
+      <mat-drawer
+        [mode]="viewPoint() >= isMedium ? 'side' : 'over'"
+        [opened]="viewPoint() >= isMedium || isToggleDrawer()"
+      >
+        <a
+          routerLink="/projects"
+          mat-menu-item
+          routerLinkActive="active-link"
+          (click)="toggleDrawer()"
+        >
           <mat-icon>dataset</mat-icon>
           Projects
         </a>
         <a
+          (click)="toggleDrawer()"
           routerLink="/contributors"
           mat-menu-item
           routerLinkActive="active-link"
@@ -51,4 +63,10 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
     background: var(--mat-sys-outline-variant);
   }`,
 })
-export class SideNavComponent {}
+export class SideNavComponent {
+  isMedium = IS_MEDIUM;
+  viewPoint = inject(WindowsObserverService).width;
+  state = inject(StateService);
+  isToggleDrawer = computed(() => this.state.isToggleDrawer());
+  toggleDrawer = () => this.state.isToggleDrawer.update((value) => !value);
+}
