@@ -12,6 +12,22 @@
   <mat-divider />
 
   <mat-card-content>
+    @if (loading()) {
+    <app-login-skelton />
+
+    }@else if (emailSent()) {
+    <span style="width: 500px; display: block; margin-top: 1rem">
+      Un mail a été envoyé {{ emailSent() }}
+      <button
+        mat-button
+        color="primary"
+        style="text-decoration: underline"
+        (click)="resetState()"
+      >
+        Email non reçu ?
+      </button>
+    </span>
+    }@else {
     <main style="padding: 1rem 0">
       <button mat-flat-button (click)="loginWithGoogle()" style="width: 100%">
         Connectez avec Google
@@ -23,7 +39,11 @@
         <mat-divider />
       </div>
 
-      <form align="end" #emailForm="ngForm">
+      <form
+        align="end"
+        #emailForm="ngForm"
+        (ngSubmit)="emailFormSubmit(emailForm)"
+      >
         <mat-form-field appearance="outline" style="width: 100%">
           <mat-label>Email</mat-label>
           <input
@@ -55,6 +75,7 @@
         </button>
       </form>
     </main>
+    }
   </mat-card-content>
   <mat-divider />
   <mat-card-footer align="center" style="padding: 1rem 0">

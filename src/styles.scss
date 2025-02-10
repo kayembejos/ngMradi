@@ -45,3 +45,32 @@ body.dark-theme {
 .mat-divider {
   border-top-color: var(--mat-sys-outline-variant) !important;
 }
+
+/* Skeleton elements */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--mat-sys-outline-variant) 25%,
+    var(--mat-sys-outline-variant) 50%,
+    var(--mat-sys-outline-variant) 75%
+  );
+  background-size: 200% 100%;
+  animation: pulse 1.5s infinite;
+  border-radius: 8px;
+}
+
+/* Pulse animation for skelton loading */
+@keyframes pulse {
+  0% {
+    background-position: 200% 0;
+    filter: brightness(1);
+  }
+  50% {
+    background-position: 0% 0;
+    filter: brightness(1.3); /* Intensify the brightness at the peak */
+  }
+  100% {
+    background-position: -200% 0;
+    filter: brightness(1);
+  }
+}
