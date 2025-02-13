@@ -1,6 +1,7 @@
 // Custom Theming for Angular Material
 // For more information: https://material.angular.io/guide/theming
 @use "@angular/material" as mat;
+@include mat.core();
 
 html {
   font-family: "Lato", serif;
@@ -40,10 +41,42 @@ body {
 
 body.dark-theme {
   color-scheme: dark;
+  .green-badge {
+    @include mat.badge-overrides(
+      (
+        background-color: lightgreen,
+      )
+    );
+  }
 }
 
 .mat-divider {
   border-top-color: var(--mat-sys-outline-variant) !important;
+}
+
+mat-form-field {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.alert-action {
+  color: var(--mat-sys-error);
+}
+
+.green-badge {
+  @include mat.badge-overrides(
+    (
+      background-color: green,
+    )
+  );
+}
+
+.orange-badge {
+  @include mat.badge-overrides(
+    (
+      background-color: orange,
+    )
+  );
 }
 
 /* Skeleton elements */

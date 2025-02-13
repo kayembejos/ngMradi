@@ -1,1 +1,50 @@
-<p>project works!</p>
+<mat-toolbar>
+  <div class="left-container">
+    <button
+      mat-icon-button
+      matTooltip="Router à la page d'accueil"
+      routerLink="/"
+    >
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+
+    <h2>
+      {{ project?.title }}
+    </h2>
+  </div>
+
+  <div class="right-container">
+    @let user = user$ | async; @if(user?.uid === project?.uid){
+    <button
+      mat-icon-button
+      matTooltip="Modifier ce projet"
+      (click)="onEditProject(project!)"
+    >
+      <mat-icon>edit</mat-icon>
+    </button>
+    <button
+      mat-icon-button
+      matTooltip="Supprimer ce projet"
+      (click)="onDeleteProject(project?.id!)"
+      routerLink="/"
+    >
+      <mat-icon class="alert-action">delete</mat-icon>
+    </button>
+    }
+  </div>
+</mat-toolbar>
+
+<mat-divider />
+
+<main style="width: 1200px; margin: auto">
+  <p>{{ project?.description }}</p>
+
+  <p align="end">
+    Ajouté le {{ formatedDate(project?.createdAt) | date : "medium" }}
+    {{
+      project?.updatedAt! > project?.createdAt!
+        ? "- Modifié le " + (formatedDate(project?.updatedAt) | date : "medium")
+        : ""
+    }}
+  </p>
+</main>
