@@ -1,6 +1,6 @@
 import { Component, inject, input, OnDestroy, OnInit } from '@angular/core';
-import { Timestamp } from '@angular/fire/firestore';
-import { Subscription } from 'rxjs';
+import { FieldValue, Timestamp } from '@angular/fire/firestore';
+import { Observable, Subscription } from 'rxjs';
 import { Project } from '../../core/models/project.model';
 import { Title } from '@angular/platform-browser';
 import { FirestoreService } from '../../core/services/firebase/firestore.service';
@@ -15,6 +15,16 @@ import { SetProjectComponent } from '../home/projects/set-project/set-project.co
 import { MatDialog } from '@angular/material/dialog';
 import { RouterLink } from '@angular/router';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatCardModule } from '@angular/material/card';
+import { SetTodoComponent } from './todo/set-todo.component';
+import { Task } from '../../core/models/task.model';
+import { TodoComponent } from './todo/todo.component';
+import {
+  CdkDragDrop,
+  CdkDrag,
+  CdkDropList,
+  moveItemInArray,
+} from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-project',
@@ -23,10 +33,14 @@ import { MatDividerModule } from '@angular/material/divider';
     MatButtonModule,
     MatIconModule,
     MatTooltipModule,
+    MatCardModule,
     AsyncPipe,
     MatDividerModule,
     RouterLink,
     DatePipe,
+    TodoComponent,
+    CdkDropList,
+    CdkDrag,
   ],
   templateUrl: './project.component.html',
   styleUrl: './project.component.scss',
@@ -44,9 +58,17 @@ export default class ProjectComponent implements OnInit, OnDestroy {
   private snackBar = inject(MatSnackBar);
   date = new Date();
 
+  todos$?: Observable<Task<Timestamp>[]>;
+  inProgresses$?: Observable<Task<Timestamp>[]>;
+  dones$?: Observable<Task<Timestamp>[]>;
+
   formatedDate = (t?: Timestamp) => this.fs.formatedTimestamp(t);
 
   ngOnInit(): void {
+    this.todos$ = this.fs.getTodos(this.id(), 'backlog');
+    this.inProgresses$ = this.fs.getTodos(this.id(), 'in-progress');
+    this.dones$ = this.fs.getTodos(this.id(), 'done');
+
     this.projectSub = this.fs
       .getDocData(this.fs.projectCol, this.id())
       .subscribe((project) => {
@@ -67,6 +89,29 @@ export default class ProjectComponent implements OnInit, OnDestroy {
     this.fs.deleteData(this.fs.projectCol, id);
     const message = 'Projet suprimé avec succès';
     this.snackBar.open(message, '', { duration: 5000 });
+  }
+
+  onSetTodo(projectId: string) {
+    this.dialog.open(SetTodoComponent, {
+      width: '35rem',
+      disableClose: true,
+      data: { projectId },
+    });
+  }
+
+  drop(
+    event: CdkDragDrop<Task<Timestamp>[] | null>,
+    status: 'backlog' | 'in-progress' | 'done'
+  ) {
+    if (event.previousContainer !== event.container) {
+      const task = event.previousContainer.data![
+        event.previousIndex
+      ] as Task<FieldValue>;
+
+      task.moved = true;
+      task.status = status;
+      this.fs.setTask(this.id(), task);
+    }
   }
 
   ngOnDestroy(): void {

@@ -16,6 +16,8 @@ import {
 } from '@angular/fire/firestore';
 import { Project } from '../../models/project.model';
 import { User } from '@angular/fire/auth';
+import { Task } from '../../models/task.model';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -23,7 +25,9 @@ import { User } from '@angular/fire/auth';
 export class FirestoreService {
   private fs = inject(Firestore);
 
+  //Collection and SubCollection (easy to find when writing security rules)
   projectCol = 'projects';
+  todoCol = (projectId: string) => `${this.projectCol}/${projectId}/todos`;
 
   createDocId = (colName: string) => doc(collection(this.fs, colName)).id;
 
@@ -32,6 +36,13 @@ export class FirestoreService {
     const projectDocRef = doc(projectColRef, p.id);
     return setDoc(projectDocRef, p, { merge: true });
   }
+
+  setTask(projectId: string, t: Task<FieldValue>) {
+    const todoColRef = collection(this.fs, this.todoCol(projectId));
+    const todoDocRef = doc(todoColRef, t.id);
+    return setDoc(todoDocRef, t, { merge: true });
+  }
+
   getProjects(user: User) {
     const projectColRef = collection(this.fs, this.projectCol);
     const queryProjects = query(
@@ -43,6 +54,16 @@ export class FirestoreService {
       orderBy('createdAt', 'desc')
     );
     return collectionData(queryProjects);
+  }
+
+  getTodos(projectId: string, todoStatus: string) {
+    const todoColRef = collection(this.fs, this.todoCol(projectId));
+    const queryTodos = query(
+      todoColRef,
+      where('status', '==', todoStatus),
+      orderBy('createdAt', 'asc')
+    );
+    return collectionData(queryTodos) as Observable<Task<Timestamp>[]>;
   }
 
   getDocData(colName: string, id: string) {
